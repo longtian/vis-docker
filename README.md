@@ -1,2 +1,7 @@
 # vis-docker
-Visualization of docker
+
+Realtime visualization of docker events using vis.js
+
+Screen Shot
+
+![](./screenshot.png)

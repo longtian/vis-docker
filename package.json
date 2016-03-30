@@ -1,0 +1,32 @@
+{
+  "name": "vis-docker",
+  "version": "0.0.0",
+  "description": "Visualization docker events",
+  "main": "server.js",
+  "scripts": {
+    "test": "docker build --rm -t=x --no-cache ./example",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wyvernnot/vis-docker.git"
+  },
+  "keywords": [
+    "docker",
+    "visualization"
+  ],
+  "author": "wyvernnot",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wyvernnot/vis-docker/issues"
+  },
+  "homepage": "https://github.com/wyvernnot/vis-docker#readme",
+  "dependencies": {
+    "concat-stream": "^1.5.1",
+    "event-stream": "^3.3.2",
+    "express": "^4.13.4",
+    "jquery": "^2.2.2",
+    "vis": "^4.15.1",
+    "ws": "^1.0.1"
+  }
+}
