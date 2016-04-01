@@ -1,5 +1,5 @@
 /**
- * convert date string to timestamp (with 0.001 seconds precision)
+ * convert ISO date string to timestamp (with 0.001 seconds precision)
  * @param str
  * @returns {number}
  */

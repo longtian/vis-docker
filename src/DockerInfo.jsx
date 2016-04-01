@@ -2,6 +2,9 @@ import React from 'react';
 import $ from 'jquery';
 import {onEvent} from './eventHandlers.es6';
 
+/**
+ * show docker and websocker information
+ */
 class DockerInfo extends React.Component {
 
   constructor(...args) {
@@ -19,6 +22,7 @@ class DockerInfo extends React.Component {
     this.setState({
       messageCount: this.state.messageCount + 1
     });
+    // parse the message
     onEvent(JSON.parse(e.data));
   }
 
@@ -35,6 +39,12 @@ class DockerInfo extends React.Component {
     });
   }
 
+
+  /**
+   * reconnet
+   *
+   * @param e
+   */
   onClose(e) {
     let reconnectCount = this.state.reconnectCount + 1;
 
@@ -53,6 +63,10 @@ class DockerInfo extends React.Component {
     this.connect();
   }
 
+
+  /**
+   * @todo check memory leak here
+   */
   connect() {
     let {
       host,
@@ -65,6 +79,10 @@ class DockerInfo extends React.Component {
     socket.addEventListener('close', this.onClose.bind(this));
   }
 
+
+  /**
+   * fetch docker version for display
+   */
   fetchVersion() {
     $.getJSON('/version', res=> {
       let {
@@ -80,41 +98,41 @@ class DockerInfo extends React.Component {
   }
 
   render() {
-    return <table className="pure-table pure-table-bordered pure-table-striped" style={{width:"100%"}}>
-      <tbody>
+    return (
+      <table className="pure-table pure-table-bordered pure-table-striped" style={{width:"100%"}}>
+        <tbody>
+        <tr>
+          <td colSpan="2"><strong>Docker</strong></td>
+        </tr>
+        <tr>
+          <td>Version</td>
+          <td>{this.state.Version}</td>
+        </tr>
+        <tr>
+          <td>ApiVersion</td>
+          <td>
+            <a
+              target="_blank"
+              href={`https://github.com/docker/docker/blob/master/docs/reference/api/docker_remote_api_v${this.state.ApiVersion}.md#monitor-dockers-events`}>
+              {this.state.ApiVersion}
+            </a></td>
+        </tr>
 
-      <tr>
-        <td colSpan="2"><strong>Docker</strong></td>
-      </tr>
-      <tr>
-        <td>Version</td>
-        <td>{this.state.Version}</td>
-      </tr>
-      <tr>
-        <td>ApiVersion</td>
-        <td>
-          <a
-            target="_blank"
-            href={`https://github.com/docker/docker/blob/master/docs/reference/api/docker_remote_api_v${this.state.ApiVersion}.md#monitor-dockers-events`}>
-            {this.state.ApiVersion}
-          </a></td>
-      </tr>
+        <tr>
+          <td colSpan="2"><strong>WebSocket</strong></td>
+        </tr>
 
-      <tr>
-        <td colSpan="2"><strong>WebSocket</strong></td>
-      </tr>
+        <tr>
+          <td>connection</td>
+          <td>{this.state.status}</td>
+        </tr>
+        <tr>
+          <td>message</td>
+          <td>{this.state.messageCount}</td>
+        </tr>
 
-      <tr>
-        <td>connection</td>
-        <td>{this.state.status}</td>
-      </tr>
-      <tr>
-        <td>message</td>
-        <td>{this.state.messageCount}</td>
-      </tr>
-
-      </tbody>
-    </table>
+        </tbody>
+      </table>)
   }
 }
 

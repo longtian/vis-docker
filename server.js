@@ -116,6 +116,12 @@ app.get('/version', (req, res)=> {
   infoRequest.end();
 });
 
+
+/**
+ * mount webpack-dev-middleware
+ *
+ * @todo remove it to build version
+ */
 app.use(webpackDevMiddleware(webpack(require('./webpack.config'))));
 server.on('request', app);
 

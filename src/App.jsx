@@ -6,12 +6,19 @@ import DockerInfo from "./DockerInfo.jsx";
 import {render} from "react-dom";
 import Timeline from "./Timeline.jsx";
 import Network from "./Network.jsx";
+
 /**
+ * this is the entrance file
+ *
  * WebSocketContainer is used to receive messages from backend
  * Timeline and Network is as its name
  */
 class App extends React.Component {
 
+  /**
+   * handle keyword change and refresh vis.DataView
+   * @param e
+   */
   handleChange(e) {
     this.refs.timeline.contentKeyword = e.target.value;
     this.refs.timeline.filteredNodes.refresh();
@@ -36,6 +43,8 @@ class App extends React.Component {
   }
 }
 
+
+// mount to document.body
 var element = document.createElement("div");
 document.body.appendChild(element);
 render(<App/>, element);

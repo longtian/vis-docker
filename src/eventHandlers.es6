@@ -1,6 +1,12 @@
 import {nodes, edges, events} from './store.es6';
 import {shorten} from './util.es6';
 
+
+/**
+ * mark a node to gray
+ * 
+ * @param id
+ */
 const destroyNode = id=> {
   var destroyNodes = nodes.get([id])[0];
   if (destroyNodes) {

@@ -48,6 +48,7 @@ class Timeline extends React.Component {
     let timeline = new vis.Timeline(this.refs.container, events, this.filteredNodes, timelineOptions);
     timeline.on('rangechanged', this.handleRangeChange.bind(this));
     timeline.moveTo(new Date);
+    // @todo interaction between different graphs
     // timeline.on('select', function (e) {
     //   var selectedItems = items.get(e.items);
     //   console.info(selectedItems[0], selectedItems[0].event);
@@ -73,6 +74,7 @@ class Timeline extends React.Component {
         until
       });
 
+    // show direct link to events API
     this.setState({
       href
     })
