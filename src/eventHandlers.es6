@@ -37,13 +37,15 @@ const createOrUpdateNode = event=> {
   let nodeId = event.id || event.Actor.ID; // for connect and unmount events
   if (!nodes.get(nodeId)) {
 
+    let hash = shorten(nodeId);
+
     let {
-      name=shorten(nodeId)
+      name=hash
     } = event.Actor.Attributes;
 
     nodes.add({
       id: nodeId,
-      content: `<strong>${event.Type}</strong><br/>${name}`,
+      content: `<strong>${event.Type}</strong><br/>${name}<br/>${name != hash ? hash : ""}`,
       label: `${event.Type}:${name}`
     })
   }
