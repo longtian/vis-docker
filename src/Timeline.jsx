@@ -14,6 +14,7 @@ class Timeline extends React.Component {
     this.state = {
       href: "#"
     }
+    this.contentKeyword = "";
   }
 
   componentDidMount() {
@@ -38,7 +39,13 @@ class Timeline extends React.Component {
       height: "600px"
     }
 
-    var timeline = new vis.Timeline(this.refs.container, events, nodes, timelineOptions);
+    this.filteredNodes = new vis.DataView(nodes, {
+      filter: a=> {
+        return a.content.toLowerCase().indexOf(this.contentKeyword) != -1;
+      }
+    });
+
+    let timeline = new vis.Timeline(this.refs.container, events, this.filteredNodes, timelineOptions);
     timeline.on('rangechanged', this.handleRangeChange.bind(this));
     timeline.moveTo(new Date);
     // timeline.on('select', function (e) {
@@ -76,10 +83,16 @@ class Timeline extends React.Component {
       })
   }
 
+  handleChange(e) {
+    this.contentKeyword = e.target.value;
+    this.filteredNodes.refresh();
+  }
+
   render() {
     return <div className="timelineContainer">
       <div ref="container"/>
-      <a href={this.state.href}>JSON</a>
+      <input type="search" placeholder="Search Name and Type" onChange={this.handleChange.bind(this)}/>
+      <a href={this.state.href}>View as JSON</a>
     </div>
   }
 }
