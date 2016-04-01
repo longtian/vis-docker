@@ -4,7 +4,15 @@ body, div {
 }
 
 .vis-item {
-    border-color: orange;
+    border-color: #888888;
+}
+
+.vis-item.create {
+    border-color: #000000;
+}
+
+.vis-item.kill, .vis-item.die, .vis-item.destroy {
+    border-color: orangered;
 }
 
 .timelineContainer {
@@ -15,4 +23,8 @@ body, div {
 .networkContainer {
     float: left;
     width: 50%;
+}
+
+.vis-network {
+    border: 1px solid #bfbfbf;
 }

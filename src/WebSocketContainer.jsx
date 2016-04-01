@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {onEvent} from './store.es6';
+import {onEvent} from './eventHandlers.es6';
 
 class WebSocketContainer extends React.Component {
 
