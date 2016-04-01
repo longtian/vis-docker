@@ -7,9 +7,8 @@ class Network extends React.Component {
 
   componentDidMount() {
     const graphOptions = {
-      height: "600px"
+      height: "491px"
     }
-
 
     var graph = new vis.Network(findDOMNode(this), {
       nodes: nodes,
@@ -18,7 +17,7 @@ class Network extends React.Component {
   }
 
   render() {
-    return <div className="networkContainer"/>
+    return <div/>
   }
 }
 

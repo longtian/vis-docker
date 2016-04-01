@@ -20,8 +20,8 @@ class Timeline extends React.Component {
   componentDidMount() {
 
     const timelineOptions = {
-      margin: 0,
-      orientation: 'both',
+      margin: -5,
+      orientation: 'top',
       stack: true,
       zoomMax: 6 * 3600000,
       order: function (a, b) {
@@ -36,7 +36,7 @@ class Timeline extends React.Component {
         }
       },
       max: Date.now() + 24 * 3600000,
-      height: "600px"
+      height: "740px"
     }
 
     this.filteredNodes = new vis.DataView(nodes, {
@@ -83,16 +83,12 @@ class Timeline extends React.Component {
       })
   }
 
-  handleChange(e) {
-    this.contentKeyword = e.target.value;
-    this.filteredNodes.refresh();
-  }
-
   render() {
-    return <div className="timelineContainer">
+    return <div>
       <div ref="container"/>
-      <input type="search" placeholder="Search Name and Type" onChange={this.handleChange.bind(this)}/>
-      <a href={this.state.href}>View as JSON</a>
+      <a style={{color:"#ccc"}} target="_blank" href={this.state.href}>
+        <small>{window.location.host}{this.state.href}</small>
+      </a>
     </div>
   }
 }

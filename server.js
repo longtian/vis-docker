@@ -76,6 +76,27 @@ app.get('/events', (req, res)=> {
   eventsRequest.end();
 });
 
+/**
+ * forward version api
+ */
+app.get('/version', (req, res)=> {
+
+  let infoRequest = http.request(
+    Object.assign(connectionOptions, {
+      path: '/version'
+    }), response=> {
+      response.pipe(res);
+    });
+
+  infoRequest.on('error', (err)=> {
+    console.error(err);
+    res.statusCode = 502;
+    res.end();
+  });
+
+  infoRequest.end();
+});
+
 app.use(webpackDevMiddleware(webpack(require('./webpack.config'))));
 server.on('request', app);
 

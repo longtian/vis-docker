@@ -17,12 +17,12 @@ body, div {
 
 .timelineContainer {
     float: left;
-    width: 50%;
+    width: 60%
 }
 
 .networkContainer {
     float: left;
-    width: 50%;
+    width: 40%
 }
 
 .vis-network {
