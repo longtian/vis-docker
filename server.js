@@ -1,3 +1,5 @@
+"use strict";
+
 const http = require('http');
 const express = require('express');
 const path = require('path');
@@ -5,25 +7,45 @@ const es = require('event-stream');
 const qs = require('querystring');
 const concat = require('concat-stream');
 const WebSocketServer = require('ws').Server;
+const webpackDevMiddleware = require("webpack-dev-middleware");
+const webpack = require("webpack");
 
-var app = express();
-var server = http.createServer();
-var wss = new WebSocketServer({
-  server: server
-});
+const app = express();
+const server = http.createServer();
 
-http.request({
-  socketPath: '/var/run/docker.sock',
-  path: '/events'
-}, res=> {
-  res.pipe(es.split()).pipe(es.map((data, cb)=> {
-    wss.clients.forEach(client=> {
-      client.send(data);
-    })
-    cb(null, data)
-  }))
-}).end()
+const connectionOptions = {
+  socketPath: '/var/run/docker.sock'
+};
 
+
+/**
+ * begin listening and forwarding docker events
+ */
+const listenForEvents = ()=> {
+  let wss = new WebSocketServer({
+    server: server
+  });
+  let longLiveRequest = http.request(
+    Object.assign(connectionOptions, {
+      path: '/events'
+    }), res=> {
+      res.pipe(es.split())
+        .pipe(es.map((data, cb)=> {
+          wss.clients.forEach(client=> {
+            client.send(data);
+          })
+          cb(null, data);
+        }));
+    });
+  longLiveRequest.end();
+  longLiveRequest.on('error', error=> {
+    console.error(error);
+  })
+}
+
+/**
+ * forward events api
+ */
 app.get('/events', (req, res)=> {
 
   if (!req.query.since || !req.query.until) {
@@ -31,20 +53,19 @@ app.get('/events', (req, res)=> {
     res.end('since and until parameters must be provided');
   }
 
-  var eventsRequest = http.request({
-    socketPath: '/var/run/docker.sock',
-    path: '/events?' + qs.stringify(req.query)
-  }, response=> {
-    response.pipe(concat(function (logBuffer) {
-      if (logBuffer.length) {
-        var text = "[" + logBuffer.toString().split('\n').join(',').replace(/,$/, ']');
-        res.end(text);
-      } else {
-        res.end('[]');
-      }
-
-    }))
-  });
+  let eventsRequest = http.request(
+    Object.assign(connectionOptions, {
+      path: '/events?' + qs.stringify(req.query)
+    }), response=> {
+      response.pipe(concat(function (logBuffer) {
+        if (logBuffer.length) {
+          var text = "[" + logBuffer.toString().split('\n').join(',').replace(/,$/, ']');
+          res.end(text);
+        } else {
+          res.end('[]');
+        }
+      }))
+    });
 
   eventsRequest.on('error', (err)=> {
     console.error(err);
@@ -53,13 +74,12 @@ app.get('/events', (req, res)=> {
   });
 
   eventsRequest.end();
-})
+});
 
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.use('/static', express.static(path.join(__dirname, 'node_modules', 'vis', 'dist')));
-app.use('/static', express.static(path.join(__dirname, 'node_modules', 'jquery', 'dist')));
-
+app.use(webpackDevMiddleware(webpack(require('./webpack.config'))));
 server.on('request', app);
 
-server.listen(3000);
+listenForEvents();
+server.listen(3000, function () {
+  console.log('Listening on port %d', server.address().port);
+});

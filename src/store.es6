@@ -1,70 +1,18 @@
-var items = new vis.DataSet();
-var groups = new vis.DataSet();
-var edges = new vis.DataSet();
+import {DataSet} from "vis";
+import {shorten} from "./util.es6";
 
-var container = document.getElementById('visualization');
-var graphContainer = document.getElementById('graph');
+const items = new DataSet();
+const groups = new DataSet();
+const edges = new DataSet();
 
-var timelineOptions = {
-  margin: -10,
-  orientation: 'both',
-  stack: true,
-  zoomMax: 6 * 3600000,
-  order: function (a, b) {
-    var a = "" + a.id;
-    var b = "" + b.id;
-    if (a > b) {
-      return -1
-    } else if (a == b) {
-      return 0
-    } else {
-      return 1
-    }
-  },
-  max: Date.now() + 24 * 3600000,
-  height: $(window).height() - 20 + 'px'
-};
-
-var graphOptions = {
-  height: $(window).height() - 20 + 'px'
+export {
+  items,
+  groups,
+  edges
 }
 
 
-var timeline = new vis.Timeline(container, items, groups, timelineOptions);
-
-var graph = new vis.Network(graphContainer, {
-  nodes: groups,
-  edges: edges
-}, graphOptions);
-
-var ts = function (str) {
-  return Math.round(+(new Date(str)) / 1000);
-}
-
-var onRangeChange = function (properties) {
-
-  // items.clear();
-  // groups.clear();
-  // edges.clear();
-
-  var start = ts(properties.start);
-  var end = ts(properties.end);
-  var now = Math.floor((+new Date) / 1000);
-
-  $.getJSON('/events', {
-    since: start < now ? start : now,
-    until: end < now ? end : now
-  }).done(function (res) {
-    res.forEach(onEvent);
-  })
-}
-
-function shorten(str) {
-  str = str || "";
-  return str.slice(0, 8);
-}
-
-function destroyNode(id) {
+const destroyNode = id=> {
   var destroyNodes = groups.get([id])[0];
   if (destroyNodes) {
     groups.update({
@@ -74,8 +22,8 @@ function destroyNode(id) {
   }
 }
 
-function onEvent(event) {
 
+export const onEvent = (event)=> {
   var itemId = event.timeNano;
   var itemContent = event.status || event.Action;
 
@@ -171,22 +119,5 @@ function onEvent(event) {
       })
     }
 
-
   }
 }
-
-
-timeline.on('rangechanged', onRangeChange);
-
-timeline.moveTo(new Date);
-
-timeline.on('select', function (e) {
-  var selectedItems = items.get(e.items);
-  console.info(selectedItems[0], selectedItems[0].event);
-  graph.selectNodes([selectedItems[0].group]);
-});
-
-var socket = new WebSocket('ws://' + location.host);
-socket.addEventListener('message', function (e) {
-  onEvent(JSON.parse(e.data));
-});

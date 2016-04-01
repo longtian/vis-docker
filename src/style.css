@@ -1,0 +1,18 @@
+body, div {
+    padding: 0;
+    margin: 0;
+}
+
+.vis-item {
+    border-color: orange;
+}
+
+.timelineContainer {
+    float: left;
+    width: 50%;
+}
+
+.networkContainer {
+    float: left;
+    width: 50%;
+}
