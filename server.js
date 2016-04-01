@@ -17,18 +17,38 @@ const connectionOptions = {
   socketPath: '/var/run/docker.sock'
 };
 
+const wss = new WebSocketServer({
+  server: server
+});
+
+var fallback = 2;
+
+/**
+ * error handler for docker events stream
+ *
+ * @param error
+ */
+const reconnectEvents = (error)=> {
+  if (error) {
+    console.error(error);
+  }
+  console.error('disconnected, wait %d seconds to reconnect', fallback);
+  setTimeout(listenForEvents, fallback * 1000);
+  // increase fall back
+  fallback = fallback < 257 ? fallback * 2 : 120;
+}
+
 
 /**
  * begin listening and forwarding docker events
  */
 const listenForEvents = ()=> {
-  let wss = new WebSocketServer({
-    server: server
-  });
   let longLiveRequest = http.request(
     Object.assign(connectionOptions, {
       path: '/events'
     }), res=> {
+      fallback = 2;
+      console.log('Connected to docker daemon, reset fallback to %d', fallback);
       res.pipe(es.split())
         .pipe(es.map((data, cb)=> {
           wss.clients.forEach(client=> {
@@ -38,9 +58,8 @@ const listenForEvents = ()=> {
         }));
     });
   longLiveRequest.end();
-  longLiveRequest.on('error', error=> {
-    console.error(error);
-  })
+  longLiveRequest.on('error', reconnectEvents);
+  longLiveRequest.on('close', reconnectEvents);
 }
 
 /**
