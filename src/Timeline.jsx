@@ -41,7 +41,7 @@ class Timeline extends React.Component {
 
     this.filteredNodes = new vis.DataView(nodes, {
       filter: a=> {
-        return a.content.toLowerCase().indexOf(this.contentKeyword) != -1;
+        return a.content.toLowerCase().indexOf(this.contentKeyword.toLowerCase()) != -1;
       }
     });
 
