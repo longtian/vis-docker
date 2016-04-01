@@ -10,6 +10,7 @@ class DockerInfo extends React.Component {
       status: "n/a",
       messageCount: 0,
       ApiVersion: "n/a",
+      reconnectCount: 0,
       Version: "n/a"
     }
   }
@@ -23,7 +24,8 @@ class DockerInfo extends React.Component {
 
   onOpen(e) {
     this.setState({
-      status: 'open'
+      status: 'open',
+      reconnectCount: 0
     });
   }
 
@@ -34,13 +36,24 @@ class DockerInfo extends React.Component {
   }
 
   onClose(e) {
+    let reconnectCount = this.state.reconnectCount + 1;
+
     this.setState({
-      status: 'close'
+      status: `reconnect ...${reconnectCount}`,
+      reconnectCount
     });
+
+    setTimeout(()=> {
+      this.connect()
+    }, 3000);
   }
 
   componentDidMount() {
     this.fetchVersion();
+    this.connect();
+  }
+
+  connect() {
     let {
       host,
       protocol
